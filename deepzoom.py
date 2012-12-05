@@ -4,6 +4,7 @@
 #
 #  Deep Zoom Tools
 #
+#  Copyright (c) 2012, Peter Reimer <peter@4pi.org>
 #  Copyright (c) 2008-2011, OpenZoom <http://openzoom.org>
 #  Copyright (c) 2008-2011, Daniel Gasienica <daniel@gasienica.ch>
 #  Copyright (c) 2010, Boris Bluntschli <boris@bluntschli.ch>
@@ -475,7 +476,9 @@ def safe_open(path):
 ################################################################################
 
 def main():
-    parser = optparse.OptionParser(usage='Usage: %prog [options] filename')
+    
+    usage = 'Usage: %prog [options] filename'
+    parser = optparse.OptionParser(usage=usage)
 
     parser.add_option('-d', '--destination', dest='destination',
                       help='Set the destination of the output.')
@@ -512,5 +515,3 @@ def main():
                            resize_filter=options.resize_filter)
     creator.create(source, options.destination)
 
-if __name__ == '__main__':
-    main()
