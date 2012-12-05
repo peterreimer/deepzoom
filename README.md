@@ -2,14 +2,10 @@
 
 ## Installation
 
-    git clone https://github.com/openzoom/deepzoom.py.git
+    git clone https://github.com/peterreimer/deepzoom.py.git
     cd deepzoom.py
     python setup.py install
 
-## Example
-
-    cd deepzoom.py/examples/helloworld/
-    ./helloworld.py
 
 ## Dependencies
 
@@ -40,6 +36,11 @@ Powered by [OpenZoom][].
 Licensed under the [New BSD Licence][bsd].
 
 ## Changelog
+
+### Verson 1.1.0 - December 5, 2012
+
+  - no new functionality, just  cleaning up, switching from distutils to
+    setup tools adding myself to copyrights
 
 ### Version 1.0.0 – October 6, 2011
 
