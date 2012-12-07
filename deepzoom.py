@@ -512,10 +512,10 @@ def main():
                       default=0.8, help='Quality of the image output (0-1). Default: 0.8')
     parser.add_option('-r', '--resize_filter', dest='resize_filter', default=DEFAULT_RESIZE_FILTER,
                       help='Type of filter for resizing (bicubic, nearest, bilinear, antialias (best). Default: antialias')
+    parser.add_option('-l', '--discard_levels', dest='discard_levels', default=False, action="store_true",
+                      help='Discard all but the higest level with just one tile. Required by the Salado Panorama Viewer')
     parser.add_option('-v', '--verbose', dest='verbose', default=False, action="store_true",
                       help='Be more verbose about what happens')
-    parser.add_option('-l', '--discard_levels', dest='discard_levels', default=False, action="store_true",
-                      help='Discard all levels with a single tile smaller than the given tile size')
 
     (options, args) = parser.parse_args()
     if not args:
