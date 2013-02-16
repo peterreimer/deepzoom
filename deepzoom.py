@@ -38,7 +38,7 @@
 #
 
 import math
-import optparse
+import argparse
 import os
 import PIL.Image
 import shutil
@@ -505,45 +505,39 @@ def safe_open(path):
 ################################################################################
 
 def main():
-    
-    usage = 'Usage: %prog [options] filename'
-    parser = optparse.OptionParser(usage=usage)
-
-    parser.add_option('-d', '--destination', dest='destination',
-                      help='Set the destination of the output.')
-    parser.add_option('-s', '--tile_size', dest='tile_size', type='int',
+    parser = argparse.ArgumentParser(prog='deepzoom', description='Create an image pyramide.')
+    parser.add_argument('image', help='An image.')
+    parser.add_argument('-d','--destination', help='Set the destination of the output.')
+    parser.add_argument('-s', '--tile_size', dest='tile_size', type=int,
                       default=254, help='Size of the tiles. Default: 254')
-    parser.add_option('-f', '--tile_format', dest='tile_format',
+    parser.add_argument('-f', '--tile_format',
                       default=DEFAULT_IMAGE_FORMAT, help='Image format of the tiles (jpg or png). Default: jpg')
-    parser.add_option('-o', '--tile_overlap', dest='tile_overlap', type='int',
+    parser.add_argument('-o', '--tile_overlap', type=int,
                       default=1, help='Overlap of the tiles in pixels (0-10). Default: 1')
-    parser.add_option('-q', '--image_quality', dest='image_quality', type='float',
+    parser.add_argument('-q', '--image_quality', type=float,
                       default=0.8, help='Quality of the image output (0-1). Default: 0.8')
-    parser.add_option('-r', '--resize_filter', dest='resize_filter', default=DEFAULT_RESIZE_FILTER,
+    parser.add_argument('-r', '--resize_filter', default=DEFAULT_RESIZE_FILTER,
                       help='Type of filter for resizing (bicubic, nearest, bilinear, antialias (best). Default: antialias')
-    parser.add_option('-l', '--discard_levels', dest='discard_levels', default=False, action="store_true",
+    parser.add_argument('-l', '--discard_levels', default=False, action="store_true",
                       help='Discard all but the higest level with just one tile. Required by the Salado Panorama Viewer')
-    parser.add_option('-v', '--verbose', dest='verbose', default=False, action="store_true",
+    parser.add_argument('-v', '--verbose', default=False, action="store_true",
                       help='Be more verbose about what happens')
-
-    (options, args) = parser.parse_args()
-    if not args:
-        parser.print_help()
-        sys.exit(1)
-
-    source = args[0]
-
-    if not options.destination:
-        if os.path.exists(source):
-            options.destination = os.path.splitext(source)[0] + '.dzi'
+    
+    args = parser.parse_args()
+    
+    print args.image
+        
+    if not args.destination:
+        if os.path.exists(args.image):
+            args.destination = os.path.splitext(args.image)[0] + '.dzi'
         else:
-            options.destination = os.path.splitext(os.path.basename(source))[0] + '.dzi'
-    if options.resize_filter and options.resize_filter in RESIZE_FILTERS:
-        options.resize_filter = RESIZE_FILTERS[options.resize_filter]
+            args.destination = os.path.splitext(os.path.basename(source))[0] + '.dzi'
+    if args.resize_filter and args.resize_filter in RESIZE_FILTERS:
+        args.resize_filter = RESIZE_FILTERS[args.resize_filter]
 
-    creator = ImageCreator(tile_size=options.tile_size,
-                           tile_format=options.tile_format,
-                           image_quality=options.image_quality,
-                           resize_filter=options.resize_filter)
-    creator.create(source, options.destination, options.discard_levels, options.verbose)
-
+    creator = ImageCreator(tile_size=args.tile_size,
+                           tile_format=args.tile_format,
+                           image_quality=args.image_quality,
+                           resize_filter=args.resize_filter)
+    creator.create(args.image, args.destination, args.discard_levels, args.verbose)
+    
