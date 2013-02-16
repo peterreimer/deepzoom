@@ -4,6 +4,7 @@
 #
 #  Deep Zoom Tools
 #
+#  Copyright (c) 2012, Peter Reimer <peter@4pi.org>
 #  Copyright (c) 2008-2011, OpenZoom <http://openzoom.org>
 #  Copyright (c) 2008-2011, Daniel Gasienica <daniel@gasienica.ch>
 #  Copyright (c) 2010, Boris Bluntschli <boris@bluntschli.ch>
@@ -127,6 +128,18 @@ class DeepZoomImageDescriptor(object):
             max_dimension = max(self.width, self.height)
             self._num_levels = int(math.ceil(math.log(max_dimension, 2))) + 1
         return self._num_levels
+    
+    def discardable_levels(self, discard_levels):
+        """List of levels containing just one single tile. The highest level
+        should not be discarded"""  
+        levels = []
+        if discard_levels:
+            for level in range(self.num_levels):
+                tiles = self.get_num_tiles(level)
+                if tiles == (1,1):
+                    levels.append(level)
+            levels.remove(max(levels))
+        return levels
 
     def get_scale(self, level):
         """Scale of a pyramid level."""
@@ -379,7 +392,7 @@ class ImageCreator(object):
             for row in xrange(rows):
                 yield (column, row)
 
-    def create(self, source, destination):
+    def create(self, source, destination,discard_levels=False,verbose=False):
         """Creates Deep Zoom image from source file and saves it to destination."""
         self.image = PIL.Image.open(safe_open(source))
         width, height = self.image.size
@@ -390,21 +403,29 @@ class ImageCreator(object):
                                                   tile_format=self.tile_format)
         # Create tiles
         image_files = _get_or_create_path(_get_files_path(destination))
+        discardable_levels = self.descriptor.discardable_levels(discard_levels)
         for level in xrange(self.descriptor.num_levels):
-            level_dir = _get_or_create_path(os.path.join(image_files, str(level)))
-            level_image = self.get_image(level)
-            for (column, row) in self.tiles(level):
-                bounds = self.descriptor.get_tile_bounds(level, column, row)
-                tile = level_image.crop(bounds)
-                format = self.descriptor.tile_format
-                tile_path = os.path.join(level_dir,
-                                         '%s_%s.%s'%(column, row, format))
-                tile_file = open(tile_path, 'wb')
-                if self.descriptor.tile_format == 'jpg':
-                    jpeg_quality = int(self.image_quality * 100)
-                    tile.save(tile_file, 'JPEG', quality=jpeg_quality)
-                else:
-                    tile.save(tile_file)
+            if level in discardable_levels:
+                if verbose: 
+                    print "discard level %s" % level
+            else:
+                if verbose: 
+                    x, y = self.descriptor.get_num_tiles(level)
+                    print  "processing level %s, %s  tiles" % (level, x * y)
+                level_image = self.get_image(level)
+                level_dir = _get_or_create_path(os.path.join(image_files, str(level)))
+                for (column, row) in self.tiles(level):
+                    bounds = self.descriptor.get_tile_bounds(level, column, row)
+                    tile = level_image.crop(bounds)
+                    format = self.descriptor.tile_format
+                    tile_path = os.path.join(level_dir,
+                                             '%s_%s.%s'%(column, row, format))
+                    tile_file = open(tile_path, 'wb')
+                    if self.descriptor.tile_format == 'jpg':
+                        jpeg_quality = int(self.image_quality * 100)
+                        tile.save(tile_file, 'JPEG', quality=jpeg_quality)
+                    else:
+                        tile.save(tile_file)
         # Create descriptor
         self.descriptor.save(destination)
 
@@ -484,7 +505,9 @@ def safe_open(path):
 ################################################################################
 
 def main():
-    parser = optparse.OptionParser(usage='Usage: %prog [options] filename')
+    
+    usage = 'Usage: %prog [options] filename'
+    parser = optparse.OptionParser(usage=usage)
 
     parser.add_option('-d', '--destination', dest='destination',
                       help='Set the destination of the output.')
@@ -498,9 +521,12 @@ def main():
                       default=0.8, help='Quality of the image output (0-1). Default: 0.8')
     parser.add_option('-r', '--resize_filter', dest='resize_filter', default=DEFAULT_RESIZE_FILTER,
                       help='Type of filter for resizing (bicubic, nearest, bilinear, antialias (best). Default: antialias')
+    parser.add_option('-l', '--discard_levels', dest='discard_levels', default=False, action="store_true",
+                      help='Discard all but the higest level with just one tile. Required by the Salado Panorama Viewer')
+    parser.add_option('-v', '--verbose', dest='verbose', default=False, action="store_true",
+                      help='Be more verbose about what happens')
 
     (options, args) = parser.parse_args()
-
     if not args:
         parser.print_help()
         sys.exit(1)
@@ -519,7 +545,5 @@ def main():
                            tile_format=options.tile_format,
                            image_quality=options.image_quality,
                            resize_filter=options.resize_filter)
-    creator.create(source, options.destination)
+    creator.create(source, options.destination, options.discard_levels, options.verbose)
 
-if __name__ == '__main__':
-    main()
