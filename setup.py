@@ -10,13 +10,15 @@ Seadragon Mobile, OpenZoom and SaladoPlayer.',
     author='Peter Reimer',
     author_email='peter@4pi.org',
     install_requires=[
-        'Pillow'
+        'Pillow<7.0'
     ],
     download_url='https://github.com/peterreimer/deepzoom.py/downloads',
     keywords='deepzoom seadragon dzi dzc seadragonajax seadragonmobile silverlightdeepzoom microsoft openzoom',
     url='http://github.com/peterreimer/deepzoom.py',
     py_modules=['deepzoom'],
     classifiers=['Intended Audience :: Developers',
+                 'Programming Language :: Python :: 2 :: Only',
+                 'Programming Language :: Python :: 2.7',
                  'License :: OSI Approved :: BSD License',
                  'Operating System :: OS Independent',
                  'Programming Language :: Python',
