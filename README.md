@@ -1,29 +1,16 @@
-# deepzoom.py: Python Deep Zoom Tools
+# deepzoom: Python Deep Zoom Tools
 
 ## Installation
 
-    git clone https://github.com/peterreimer/deepzoom.py.git
-    cd deepzoom.py
+    git clone https://github.com/peterreimer/deepzoom.git
+    cd deepzoom
     python setup.py install
 
 
 ## Dependencies
 
-- [Python Imaging Library (PIL)][pil]
-
-### Installation
-
-  1. [Get `pip`](http://www.pip-installer.org/en/latest/installing.html)
-  2. Run `sudo pip install pil`
-  3. Run `python`
-  4. Enter `import PIL` and make sure there’s no error
-  5. Congratulations, you’re ready to use `deepzoom.py`
-
-### Resources
-
-  - [Google App Engine: Installing PIL](http://code.google.com/appengine/docs/python/images/installingPIL.html)
-  - [Installing PIL on Mac OS X Lion](http://bencrowder.net/blog/2011/08/installing-pil-on-lion/)
-  - [Building PIL on OS X: Snow Leopard](http://bradmontgomery.blogspot.com/2010/02/building-pil-on-os-x-snow-leopard.html)
+- works only with EOL Python 2
+- [Pillow, the fork of PIL (the Python Image Library)][pillow]
 
 
 ## Acknowledgements
@@ -79,6 +66,6 @@ Licensed under the [New BSD Licence][bsd].
 
 
 [bsd]: http://www.opensource.org/licenses/bsd-license.php
-[pil]: http://www.pythonware.com/products/pil
+[pillow]: https://python-pillow.org/
 [openzoom]: http://openzoom.org
 [iip]: http://iipimage.sourceforge.net/
